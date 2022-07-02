@@ -21,6 +21,24 @@ nav .sidenav-trigger {
   margin: 0;
 }
 
+.header {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 15% 1fr;
+  grid-template-rows: 0.5fr 1fr;
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
+  align-items: center;
+}
+
+.header-content {
+  grid-area: 2 / 1 / 3 / 3;
+}
+
+.logo {
+  max-width: 80px;
+}
+
 /* catch styles */
 .catchs {
   margin-top: 20px;
@@ -28,6 +46,7 @@ nav .sidenav-trigger {
 .card-panel.catch {
   padding: 10px;
   display: grid;
+  column-gap: 10px;
   grid-template-columns: 2fr 6fr 1fr;
   grid-template-areas: "image details delete";
   position: relative;
@@ -50,10 +69,11 @@ nav .sidenav-trigger {
   font-size: 18px;
 }
 .catch-name {
+  font-size: 1.2em;
   font-weight: bold;
 }
 .catch-characteristics {
-  font-size: 0.8em;
+  font-size: 1em;
 }
 
 /* form-styles */
