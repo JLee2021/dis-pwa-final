@@ -34,7 +34,7 @@ nav .sidenav-trigger {
 }
 .catch img {
   grid-area: image;
-  max-width: 60px;
+  max-width: 80px;
 }
 .catch-details {
   grid-area: details;
