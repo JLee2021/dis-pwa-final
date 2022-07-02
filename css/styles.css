@@ -6,6 +6,16 @@
 }
 
 /* layout styles */
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
 nav {
   background: var(--primary);
   border-bottom: 3px solid var(--secondary);
@@ -19,6 +29,10 @@ nav a span {
 }
 nav .sidenav-trigger {
   margin: 0;
+}
+
+.page-footer {
+  background: var(--primary);
 }
 
 .header {
@@ -53,7 +67,7 @@ nav .sidenav-trigger {
 }
 .catch img {
   grid-area: image;
-  max-width: 80px;
+  max-width: 60px;
 }
 .catch-details {
   grid-area: details;
