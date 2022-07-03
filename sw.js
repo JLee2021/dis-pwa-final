@@ -1,51 +1,67 @@
-// const CACHE_NAME = "offline-dependencies";
-// const REQUIRED_FILES = [
-//   "index.html",
-//   //   "./pages/about.html",
-//   //   "./pages/contact.html",
-//   //   "./js/index.js",
-//   //   "./js/app.js",
-//   //   "./js/materialize.min.js",
-//   //   "./css/styles.css",
-//   //   "./css/materialize.min.css",
-//   //   "./img/fish.png",
-//   //   "./img/logo.png",
-// ];
-
-// // install
-// self.addEventListener("install", (evt) => {
-//   evt.waitUntil(async () => {
-//     const cache = await caches.open(CACHE_NAME);
-//     await cache.addAll(REQUIRED_FILES);
-//     self.skipWaiting();
-//   });
-//   console.log("service worker installed");
-// });
-
-// // activate event
-// self.addEventListener("activate", (evt) => {
-//   console.log("service worker activated");
-// });
-
-// self.addEventListener("fetch", (evt) => {
-//   evt.respondWith(async () => {
-//     const response = await caches.match(evt.request);
-//     return response ? response : await fetch(evt.request);
-//   });
-//   console.log("service worker fetch");
-// });
+const staticCacheName = "site-dynamic-v2";
+const dynamicCacheName = "site-dynamic-v1";
+const assets = [
+  "/",
+  "/index.html",
+  "/pages/fallback.html",
+  "/js/index.js",
+  "/js/app.js",
+  "/js/materialize.min.js",
+  "/css/styles.css",
+  "/css/materialize.min.css",
+  "/img/fish.png",
+  "/img/logo.png",
+  "https://fonts.googleapis.com/icon?family=Material+Icons",
+  "https://fonts.gstatic.com/s/materialicons/v134/flUhRq6tzZclQEJ-Vdg-IuiaDsNcIhQ8tQ.woff2",
+];
 
 // install event
 self.addEventListener("install", (evt) => {
-  console.log("service worker installed");
+  //console.log('service worker installed');
+  evt.waitUntil(
+    caches.open(staticCacheName).then((cache) => {
+      console.log("caching shell assets");
+      cache.addAll(assets);
+    })
+  );
 });
 
 // activate event
 self.addEventListener("activate", (evt) => {
-  console.log("service worker activated");
+  //console.log('service worker activated');
+  evt.waitUntil(
+    caches.keys().then((keys) => {
+      //console.log(keys);
+      return Promise.all(
+        keys
+          .filter((key) => key !== staticCacheName && key !== dynamicCacheName)
+          .map((key) => caches.delete(key))
+      );
+    })
+  );
 });
 
 // fetch event
 self.addEventListener("fetch", (evt) => {
-  console.log("fetchevent", evt);
+  //console.log('fetch event', evt);
+  evt.respondWith(
+    caches
+      .match(evt.request)
+      .then((cacheRes) => {
+        return (
+          cacheRes ||
+          fetch(evt.request).then((fetchRes) => {
+            return caches.open(dynamicCacheName).then((cache) => {
+              cache.put(evt.request.url, fetchRes.clone());
+              return fetchRes;
+            });
+          })
+        );
+      })
+      .catch(() => {
+        if (evt.request.url.indexOf(".html") > -1) {
+          return caches.match("/pages/fallback.html");
+        }
+      })
+  );
 });
