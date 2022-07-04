@@ -1,8 +1,11 @@
-console.log("I am the db.js file");
-
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  onSnapshot,
+  enableIndexedDbPersistence,
+} from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -13,14 +16,43 @@ const firebaseConfig = {
   messagingSenderId: "1071268117590",
   appId: "1:1071268117590:web:a1acb13a70290ca767cff7",
 };
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const colRef = collection(db, "catches");
 
-async function getCatches(db) {
-  const catchesCol = collection(db, "catches");
-  const catchesSnapshot = await getDocs(catchesCol);
-  const catchesList = catchesSnapshot.docs.map((doc) => doc.data());
-  return catchesList;
-}
+// getDocs(colRef)
+//   .then((snapshot) => {
+//     // console.log(snapshot.docs)
+//     let catches = [];
+//     snapshot.docs.forEach((doc) => {
+//       catches.push({ ...doc.data(), id: doc.id });
+//       renderCatches(doc.data(), doc.id);
+//     });
+//     console.log(catches);
+//   })
+//   .catch((err) => {
+//     console.log(err.message);
+//   });
+
+onSnapshot(colRef, (snapshot) => {
+  let catches = [];
+  snapshot.docs.forEach((doc) => {
+    catches.push({ ...doc.data(), id: doc.id });
+    renderCatches(doc.data(), doc.id);
+  });
+  console.log(catches);
+});
+
+enableIndexedDbPersistence().catch((err) => {
+  if (err.code == "failed-precondition") {
+    console.log("multiple tabs");
+    // Multiple tabs open, persistence can only be enabled
+    // in one tab at a a time.
+    // ...
+  } else if (err.code == "unimplemented") {
+    console.log("not supported");
+    // The current browser does not support all of the
+    // features required to enable persistence
+    // ...
+  }
+});

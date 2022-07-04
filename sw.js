@@ -1,5 +1,5 @@
-const staticCacheName = "site-dynamic-v2";
-const dynamicCacheName = "site-dynamic-v1";
+const staticCacheName = "site-dynamic-v3";
+const dynamicCacheName = "site-dynamic-v2";
 const assets = [
   "/",
   "/index.html",
@@ -43,25 +43,25 @@ self.addEventListener("activate", (evt) => {
 
 // fetch event
 self.addEventListener("fetch", (evt) => {
-  //console.log('fetch event', evt);
-  // evt.respondWith(
-  //   caches
-  //     .match(evt.request)
-  //     .then((cacheRes) => {
-  //       return (
-  //         cacheRes ||
-  //         fetch(evt.request).then((fetchRes) => {
-  //           return caches.open(dynamicCacheName).then((cache) => {
-  //             cache.put(evt.request.url, fetchRes.clone());
-  //             return fetchRes;
-  //           });
-  //         })
-  //       );
-  //     })
-  //     .catch(() => {
-  //       if (evt.request.url.indexOf(".html") > -1) {
-  //         return caches.match("/pages/fallback.html");
-  //       }
-  //     })
-  // );
+  console.log("fetch event", evt);
+  evt.respondWith(
+    caches
+      .match(evt.request)
+      .then((cacheRes) => {
+        return (
+          cacheRes ||
+          fetch(evt.request).then((fetchRes) => {
+            return caches.open(dynamicCacheName).then((cache) => {
+              cache.put(evt.request.url, fetchRes.clone());
+              return fetchRes;
+            });
+          })
+        );
+      })
+      .catch(() => {
+        if (evt.request.url.indexOf(".html") > -1) {
+          return caches.match("/pages/fallback.html");
+        }
+      })
+  );
 });
